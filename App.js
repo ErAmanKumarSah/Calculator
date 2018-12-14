@@ -21,20 +21,91 @@ export default class App extends Component<Props> {
 
   constructor() {
     super();
-    this.state={}
+    this.state={
+      resultText: '',
+      calculationsText: ''
+    }
+    this.operations = ['+', '-', '*', '/', '<']
   }
+
+  calculateResult(){
+    const text = this.state.resultText
+    //console.log(eval(text))
+    this.setState({
+      calculationsText: eval(text)
+    })
+  }
+
+  buttonPressed(text) {
+    console.log(text);
+    if(text== '=') {
+      return this.calculateResult()
+    }
+    this.setState({
+      resultText: this.state.resultText+text
+    })
+  }
+
+  operate(operation) {
+    switch(operation) {
+      case '<':
+        const text = this.state.resultText.split('')
+        text.pop()
+        this.setState({
+          resultText: text.join('')
+        })
+        break
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+      
+
+        const lastChar = this.state.resultText.split('').pop()
+        if(this.operations.indexOf(lastChar) > 0) return
+        if(this.state.text == "") return
+          this.setState({
+            resultText: this.state.resultText + operation
+        })
+    }
+  }
+
   render() {
+    const rows = []
+    const nums = [[1,2,3], [4,5,6], [7,8,9], ['.',0,'=']]
+
+    for(let i=0; i<4; i++) {
+      const row =[]
+      for(let j=0; j<3; j++) {
+        row.push(
+          <TouchableOpacity onPress={() => this.buttonPressed(nums[i][j])} style={styles.btn}>
+            <Text style={styles.btntext}>{nums[i][j]}</Text>
+          </TouchableOpacity>
+          )
+      }
+      rows.push(<View style={styles.row}>{row}</View>)
+    }
+
+    const ops = []
+    for(let i=0; i<5; i++) {
+      ops.push(
+        <TouchableOpacity style={styles.btn} onPress={() => this.operate(this.operations[i])}>
+          <Text style={[styles.btntext, styles.white]}>{this.operations[i]}</Text>
+        </TouchableOpacity>
+      )
+    }
     return (
       <View style={styles.container}>
-        <Text style={styles.result}>
-          <Text style={styles.resultText}>10+22</Text>
-        </Text>
-        <Text style={styles.calculation}>
-        <Text style={styles.calculationText}>32</Text>
-        </Text>
+        <View style={styles.result}>
+          <Text style={styles.resultText}>{this.state.resultText}</Text>
+        </View>
+        <View style={styles.calculation}>
+          <Text style={styles.calculationText}>{this.state.calculationsText}</Text>
+        </View>
         <View style={styles.buttons}>
           <View style={styles.numbers}>
-            <View style={styles.row}>
+            {rows}
+            {/* <View style={styles.row}>
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>1</Text></TouchableOpacity>
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>2</Text></TouchableOpacity>
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>3</Text></TouchableOpacity>
@@ -49,18 +120,19 @@ export default class App extends Component<Props> {
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>8</Text></TouchableOpacity>
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>9</Text></TouchableOpacity>
             </View>
-            <View style={styles.row}>
+            <View style={styles.row}> 
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>.</Text></TouchableOpacity>
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>0</Text></TouchableOpacity>
               <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>=</Text></TouchableOpacity>
-            </View>
-
+            </View> */}
           </View>
+
           <View style={styles.operations}>
-            <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>+</Text></TouchableOpacity>
+            {ops}
+            {/* <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>+</Text></TouchableOpacity>
             <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>-</Text></TouchableOpacity>
             <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>*</Text></TouchableOpacity>
-            <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>/</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.btn}><Text style={styles.btntext}>/</Text></TouchableOpacity> */}
           </View>
         </View>
       </View>
@@ -95,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   calculationText: {
-    fontSize: 24,
+    fontSize: 36,
     color: 'white',
   },
   buttons: {
@@ -106,7 +178,7 @@ const styles = StyleSheet.create({
   },
   numbers: {
     flex: 3,
-    backgroundColor: 'gray'
+    backgroundColor: '#cccccc'
   },
   operations: {
     color: 'red',
